@@ -73,7 +73,7 @@ def get_repositories() -> list:
 
     github_token = os.environ["GITHUB_ACCESS"]
 
-    url = "https://api.github.com/users/geogeolo/repos"
+    url = "https://api.github.com/users/unicorn526/repos"
     params = {"per_page": 1000}
     headers = {"Authorization": f"token {github_token}"}
 
@@ -90,7 +90,7 @@ def get_repositories() -> list:
                 # Retrieve information only for non-forked repositories
                 if not repo["fork"]:
                     # Check for the README repository so it won't be included
-                    if "BogdanOtava" not in repo["name"]:
+                    if "unicorn526" not in repo["name"]:
                         repo_info = {}
                         repo_info["name"] = repo["name"]
                         repo_info["description"] = repo["description"]
