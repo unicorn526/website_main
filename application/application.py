@@ -7,16 +7,17 @@ import os
 
 # 2. 初始化 OpenAI Client (請確保您有設定 OPENAI_API_KEY 環境變數)
 client = OpenAI()
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, session, redirect, url_for, render_template
 from flask_caching import Cache
 from config import TEMPLATES_PATH, TEXT_PATH
 from application.helpers import *
-
+import os
+from application.main import generateImg
 
 app = Flask(__name__, template_folder=TEMPLATES_PATH)
 app.jinja_env.filters["is_active"] = is_active
 app.jinja_env.filters["get_language_image"] = get_language_image
-
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 app.config["CACHE_TYPE"] = "simple"
 app.config["CACHE_DEFAULT_TIMEOUT"] = 3600
 cache = Cache(app)
@@ -116,3 +117,44 @@ def ai_chat():
                 
     # 不論是 GET (初次載入) 還是 POST (送出問題後)，都渲染同一個頁面
     return render_template('ai_chat.html', response=generated_text)
+
+# 3. AI 繪圖：輸入表單頁面
+@app.route("/ai_image")
+def ai_image():
+    return render_template("ai_image.html")
+
+# 4. AI 繪圖：處理表單送出
+@app.route("/generate_image", methods=["POST"])
+def generate_image():
+    prompt = request.form.get("prompt")
+    size = request.form.get("size")
+
+    if prompt and size:
+        session["prompt"] = prompt
+        session["size"] = size
+        return redirect(url_for("image_success"))
+
+    return redirect(url_for("ai_image"))
+
+# 5. AI 繪圖：呼叫 API 並顯示結果
+@app.route("/image_success")
+def image_success():
+    if "prompt" not in session or "size" not in session:
+        return redirect(url_for("ai_image"))
+
+    prompt = session["prompt"]
+    size = session["size"]
+
+    try:
+        url = generateImg(prompt, size)
+    except Exception as e:
+        session.pop("prompt", None)
+        session.pop("size", None)
+        # 發生錯誤時，將錯誤訊息傳回表單頁面顯示 (您可以根據需求改成專屬錯誤頁面)
+        return f"Image generation failed: {str(e)}", 500
+
+    session.pop("prompt", None)
+    session.pop("size", None)
+
+    # 成功生成後，渲染結果頁面
+    return render_template("ai_image_result.html", imgUrl=url, prompt=prompt)
