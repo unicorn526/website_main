@@ -6,6 +6,11 @@
             "type": "language"
         },
         {
+            "image": "https://img.icons8.com/color/256/java-coffee-cup-logo.png",
+            "title": "Java",
+            "type": "language"
+        },
+        {
             "image": "https://img.icons8.com/color/256/linux.png",
             "title": "Linux / Edge AI",
             "type": "language"
