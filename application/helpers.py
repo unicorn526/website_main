@@ -122,15 +122,22 @@ def get_repositories() -> list:
         print(f"ERROR! {error}.")
 
 
-def get_language_image(language:str) -> str:
-    """Returns the image of a programming language from 'skills.json'."""
-
-    try:
-        with open(f"{TEXT_PATH}/skills.json") as file:
-            data = json.load(file)
-    except FileNotFoundError as error:
-        print(f"ERROR! {error}.")
-    else:
-        for card in data.get("cards", []):
-            if card.get("type") == "language" and card.get("title", "").lower() == language.lower():
-                return card.get("image")
+@app.template_filter('get_language_image')
+def get_language_image(language):
+    # 建立一個字典，將 GitHub API 傳回的語言名稱對應到 Icons8 圖片網址
+    icons = {
+        "HTML": "https://img.icons8.com/color/256/html-5--v1.png",
+        "CSS": "https://img.icons8.com/color/256/css3.png",
+        "JavaScript": "https://img.icons8.com/color/256/javascript--v1.png",
+        "Python": "https://img.icons8.com/color/256/python--v1.png",
+        "Java": "https://img.icons8.com/color/256/java-coffee-cup-logo.png",
+        "C++": "https://img.icons8.com/color/256/c-plus-plus-logo.png",
+        "C": "https://img.icons8.com/color/256/c-programming.png",
+        "Jupyter Notebook": "https://img.icons8.com/color/256/jupyter.png",
+        "Shell": "https://img.icons8.com/color/256/console.png"
+    }
+    
+    # 如果找不到對應的語言，回傳一個預設的「程式碼」圖示
+    default_icon = "https://img.icons8.com/color/256/code.png"
+    
+    return icons.get(language, default_icon)
