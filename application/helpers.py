@@ -60,12 +60,14 @@ def get_skills(file_path:str) -> tuple:
     except Exception as error:
         print(f"ERROR! {error}.")
 
-    # Storing the information based on the type of card
-    languages = [card for card in data["cards"] if card["type"] == "language"]
-    frameworks = [card for card in data["cards"] if card["type"] in ["library", "framework"]]
-    technologies = [card for card in data["cards"] if card["type"] == "technology"]
-
-    return languages, frameworks, technologies
+    # 1. 對應 skills[0]: 開發與作業環境 (type: "language")
+    development = [card for card in data["cards"] if card["type"] == "language"]
+    # 2. 對應 skills[1]: AI 與智慧交通 (type: "technology")
+    ai_its = [card for card in data["cards"] if card["type"] == "technology"]
+    # 3. 對應 skills[2]: 資訊安全 (type: "security")
+    security = [card for card in data["cards"] if card["type"] == "security"]
+    # 回傳這三個陣列 (在路由中通常會被打包成 skills_data = get_skills("path_to_json"))
+    return development, ai_its, security
 
 
 def get_repositories() -> list:
