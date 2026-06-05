@@ -122,7 +122,7 @@ def get_repositories() -> list:
         print(f"ERROR! {error}.")
 
 
-@app.template_filter('get_language_image')
+
 def get_language_image(language):
     # 建立一個字典，將 GitHub API 傳回的語言名稱對應到 Icons8 圖片網址
     icons = {
