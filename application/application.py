@@ -1,5 +1,12 @@
 # Sets up the routes for all the pages
 
+# 1. 在檔案最上方的 import 區塊加入 OpenAI
+from flask import request
+from openai import OpenAI
+import os
+
+# 2. 初始化 OpenAI Client (請確保您有設定 OPENAI_API_KEY 環境變數)
+client = OpenAI()
 from flask import Flask, render_template, request, make_response
 from flask_caching import Cache
 from config import TEMPLATES_PATH, TEXT_PATH
@@ -83,3 +90,29 @@ def result():
     """Renders the 'Result' page of the website."""
 
     return render_template("result.html")
+
+@app.route('/ai_chat', methods=['GET', 'POST'])
+def ai_chat():
+    generated_text = None
+    
+    # 如果使用者送出表單 (POST)，則呼叫 OpenAI API
+    if request.method == 'POST':
+        prompt = request.form.get('prompt')
+        
+        if prompt:
+            try:
+                response = client.chat.completions.create(
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
+                    model="gpt-4o-mini",
+                    temperature=0.5,
+                )
+                generated_text = response.choices[0].message.content.strip()
+                
+            except Exception as e:
+                print(f"Error: {e}")
+                generated_text = f"發生錯誤：{e} (請確認 API 金鑰是否設定正確)"
+                
+    # 不論是 GET (初次載入) 還是 POST (送出問題後)，都渲染同一個頁面
+    return render_template('ai_chat.html', response=generated_text)
