@@ -3,3 +3,4 @@ flask_caching
 requests
 gunicorn
 openai
+python-dotenv
