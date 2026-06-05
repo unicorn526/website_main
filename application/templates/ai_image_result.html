@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}生成結果{% endblock %}
+
+{% block main %}
+    <img src="../static/images/trianglify_background.png" class="background position-fixed w-100 h-100 top-0 start-0" loading="lazy">
+    
+    <div class="container contact mb-5 pb-5">
+        <div class="row mb-3">
+            <div class="col-md-12 text-center">
+                <h1 class="page-title">生成結果</h1>
+            </div>
+        </div>
+
+        <div class="card contact-card card-design px-5 py-5 text-center">
+            <p class="text-muted mb-4">您輸入的提示詞：<strong>{{ prompt }}</strong></p>
+            
+            {% if imgUrl %}
+                <img src="{{ imgUrl }}" alt="AI Generated Image" class="img-fluid rounded shadow-sm mb-4" style="max-width: 100%; height: auto;">
+            {% else %}
+                <p class="text-danger">圖片載入失敗，請稍後再試。</p>
+            {% endif %}
+            
+            <a href="{{ url_for('ai_image') }}" class="btn mt-3 w-50 mx-auto">再畫一張 <i class="bx bx-refresh px-2"></i></a>
+        </div>
+    </div>
+{% endblock %}
